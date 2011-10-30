@@ -1,16 +1,15 @@
-#import captcha
+import captcha.py
+
 from BeautifulSoup import BeautifulSoup
 import urllib2
 import urllib
-import captcha
 
 class bot:
     def __init__(self):
-        self.zipCodes = '02139'
 
     def submitVote(self):
         captchaUrl, captchaKey = self.getCaptchaInfo()
-        data = self.makeData('bleh@email.com', 'M', '1984', '12582', captchaUrl, captchaKey)
+        data = self.makeData('bleh@email.com', 'M', '1984', '12582', processCaptcha(captchaURL), captchaKey)
         print data
         #urllib.request(self.url)
 
