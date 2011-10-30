@@ -10,13 +10,14 @@ import ImageChops
 def equal(im1, im2):
   if im1.size[0] != im2.size[0] or \
      im1.size[1] != im2.size[1]:
-    return False
+    return None
   else:
+    off = 0
     for y in range(im2.size[0]): # slice across
       for x in range(im2.size[1]): # slice down
         if im2.getpixel((y, x)) != im1.getpixel((y, x)):
-          return False
-  return True
+          off += 1
+    return off
 
 #cracks
 #http://SOMETHING/tools/captcha/image?image=4u0f635w4&v=2
@@ -41,12 +42,15 @@ def decaptcha(filename):
   return r
 
 def parseImage(img):
+  scores = []
   for potential in os.listdir('./lib'):
     if potential[0] == '.': continue
     pi = Image.open('./lib/' + potential)
-    if equal(pi, img):
-      return potential[:potential.index('.')]
-  raise Exception('could not decaptcha the image!')
+    t = (equal(pi, img), potential[:potential.index('.')])
+    if t[0] != None:
+      scores.append(t)
+  print scores
+  return min(scores)[1]
 
 def split(filename):
   im = Image.open(filename)
