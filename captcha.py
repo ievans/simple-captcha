@@ -42,15 +42,24 @@ def decaptcha(filename):
   return r
 
 def parseImage(img):
-  scores = []
+  scores = {}
   for potential in os.listdir('./lib'):
     if potential[0] == '.': continue
     pi = Image.open('./lib/' + potential)
-    t = (equal(pi, img), potential[:potential.index('.')])
-    if t[0] != None:
-      scores.append(t)
-  print scores
-  return min(scores)[1]
+    letter = potential[:potential.index('.')]
+    if letter not in scores:
+      scores[letter] = []
+    score = equal(pi, img)
+    if score != None:
+      scores[letter].append(score)
+  avgs = []
+  for k, v in scores.items():
+    if len(v) > 0:
+      avgs.append((sum(v) / float(len(v)), k))
+  print avgs
+  r = min(avgs)
+  print 'decaptcha:', r[1], 'score:', r[0]
+  return r[1]
 
 def split(filename):
   im = Image.open(filename)
