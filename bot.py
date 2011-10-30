@@ -2,6 +2,7 @@
 from BeautifulSoup import BeautifulSoup
 import urllib2
 import urllib
+import captcha
 
 class bot:
     def __init__(self):
