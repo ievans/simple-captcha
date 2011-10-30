@@ -1,18 +1,38 @@
 from PIL import Image
 import os
-import time
+import math
+import random
+import operator
 from operator import itemgetter
-from compare import 
+#from compare import compare_files
+import ImageChops
+
+def equal(im1, im2):
+  if im1.size[0] != im2.size[0] or \
+     im1.size[1] != im2.size[1]:
+    return False
+  else:
+    for y in range(im2.size[0]): # slice across
+      for x in range(im2.size[1]): # slice down
+        if im2.getpixel((y, x)) != im1.getpixel((y, x)):
+          return False
+  return True
+
 #cracks
 #http://SOMETHING/tools/captcha/image?image=4u0f635w4&v=2
 
 def train():
   trainingset = os.listdir('./trainingset')
   for name in trainingset:
-    images = split(i)
-    for letter, im in images:
-       im.save('./lib/' + name[letter] + '.png')
-
+    if name[0] == '.': continue
+    images = split('./trainingset/' + name)
+    if len(images) != 6:
+      print 'bad image: ', name
+      continue
+    for letter, im in enumerate(images):
+      im.save('./lib/' + name[letter] + '.' + str(random.randint(0, 1e10)) + '.png')
+  print 'training complete, output in ./lib'
+    
 def decaptcha(filename):
   charImages = split(filename)
   r = ''
@@ -22,7 +42,9 @@ def decaptcha(filename):
 
 def parseImage(img):
   for potential in os.listdir('./lib'):
-    if compare_images(potential, img) == 0:
+    if potential[0] == '.': continue
+    pi = Image.open('./lib/' + potential)
+    if equal(pi, img):
       return potential[:potential.index('.')]
   raise Exception('could not decaptcha the image!')
 
@@ -66,20 +88,11 @@ def split(filename):
           end = y
           letters.append((start,end))
       inletter=False
-  #im2.save('temp.png');
+#  im2.save('temp.png');
 
   count = 0
   imgs = []
   for letter in letters:
     im3 = im2.crop(( letter[0] , 0, letter[1],im2.size[1] ))
-    imgs.append(img3]
+    imgs.append(im3)
   return imgs
-
-def find_image(file1, file2):
-  img1 = to_grayscale(imread(file1).astype(float))
-  img2 = to_grayscale(imread(file2).astype(float))
-  # compare
-  n_m, n_0 = compare_images(img1, img2)
-  return n_0
-  print "Manhattan norm:", n_m, "/ per pixel:", n_m/img1.size
-  print "Zero norm:", n_0, "/ per pixel:", n_0*1.0/img1.size
